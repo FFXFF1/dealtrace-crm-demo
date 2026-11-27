@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  var STORAGE_KEY = 'dealtrace_crm_arch_intro_v2';
-  var LEGACY_KEY = 'dealtrace_crm_intro_seen_v1';
+  var STORAGE_KEY = 'dealtrace-crm_arch_intro_v2';
+  var LEGACY_KEY = 'dealtrace-crm_intro_seen_v1';
   var STYLE_ID = 'crm-arch-modal-styles';
   var MODAL_ID = 'welcome-backdrop';
 
@@ -768,7 +768,7 @@
           '<div class="archm-body">' + bodyHtml + '</div>' +
 
           '<footer class="archm-foot">' +
-            '<div class="archm-foot-note">展示完整系统设计架构 · 当前演示站为纯静态交互环境，无真实外发</div>' +
+            '<div class="archm-foot-note">演示整理 fyx · 静态演示，所有客户与交互均为虚构样例</div>' +
             '<div class="archm-foot-actions">' +
               '<a class="archm-btn" href="about.html" id="archm-about">完整架构页</a>' +
               '<button class="archm-btn primary" id="archm-enter" type="button">进入交互演示</button>' +

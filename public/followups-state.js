@@ -8,14 +8,14 @@
  * Keep the shape aligned with the follow-up flow demo types.
  */
 (function () {
-  var KEY = "dealtrace_crm_followups_demo_v1";
+  var KEY = "dealtrace-crm_followups_demo_v1";
 
   var FLOW = "11111111-1111-4111-8111-111111111111";
   var VER1 = "22222222-2222-4222-8222-222222222222";
   var ENR1 = "33333333-3333-4333-8333-333333333333";
-  var LIN = "44444444-4444-4444-8444-444444444444";
-  var CHEN = "55555555-5555-4555-8555-555555555555";
-  var WANG = "66666666-6666-4666-8666-666666666666";
+  var CONTACT_PILOT = "44444444-4444-4444-8444-444444444444";
+  var CONTACT_EXPANSION = "55555555-5555-4555-8555-555555555555";
+  var CONTACT_RENEWAL = "66666666-6666-4666-8666-666666666666";
   var PIPE = "77777777-7777-4777-8777-777777777777";
   var ST_NEW = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1";
   var ST_CON = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2";
@@ -65,12 +65,12 @@
   }
 
   function createSeed() {
-    var graph = baseGraph("版本 1 的跟进提示：确认采购方是否需要补充试点席位和集成范围。报价与上线窗口由负责人审核。");
+    var graph = baseGraph("为 30 席试点整理总部、总部加车间两种范围，约工作日 14:00 后人工回访。正式报价和对客草稿由负责人审核。");
     return {
       pointers: [
         {
           id: FLOW,
-          name: "试点方案发出后跟进",
+          name: "30 席试点方案发出后跟进",
           status: "active",
           active_version_id: VER1,
           draft_graph: graph,
@@ -93,7 +93,7 @@
           id: ENR1,
           pointer_id: FLOW,
           version_id: VER1,
-          contact_id: LIN,
+          contact_id: CONTACT_PILOT,
           status: "active",
           current_node_id: "trigger-1",
           next_eval_at: WHEN,
@@ -105,23 +105,23 @@
         },
       ],
       contacts: [
-        { id: LIN, name: "林晓梅" },
-        { id: CHEN, name: "陈伟" },
-        { id: WANG, name: "王芳" },
+        { id: CONTACT_PILOT, name: "顾言川" },
+        { id: CONTACT_EXPANSION, name: "沈攸宁" },
+        { id: CONTACT_RENEWAL, name: "许知微" },
       ],
-      pipelines: [{ id: PIPE, name: "销售漏斗" }],
+      pipelines: [{ id: PIPE, name: "企业 SaaS 采购漏斗" }],
       stages: [
         { id: ST_NEW, pipeline_id: PIPE, name: "新客户", is_won: false, is_lost: false, is_archived: false },
         { id: ST_CON, pipeline_id: PIPE, name: "已联系", is_won: false, is_lost: false, is_archived: false },
         { id: ST_PRO, pipeline_id: PIPE, name: "方案沟通", is_won: false, is_lost: false, is_archived: false },
         { id: ST_WON, pipeline_id: PIPE, name: "已成交", is_won: true, is_lost: false, is_archived: false },
       ],
-      agenda_types: [{ id: AGENDA, name: "演示：到店咨询" }],
+      agenda_types: [{ id: AGENDA, name: "试点范围人工评审" }],
       message_templates: [
         {
           id: "00000000-0000-4000-8000-0000000000aa",
-          title: "演示模板（不会外发）",
-          body: "这是静态演示里的固定模板，选择它不会发送消息。",
+          title: "试点范围确认草稿",
+          body: "已整理两种试点范围，想请您核对涉及的部门、席位数和管理员权限，正式方案请以人工确认结果为准。",
           shortcut: null,
           owner_user_id: null,
         },
@@ -129,7 +129,7 @@
       notes: [
         {
           at: WHEN,
-          text: "初始数据：林晓梅已纳入版本 1，停在触发节点。没有 worker 领取，也不会发消息。",
+          text: "顾言川已纳入 30 席试点跟进的版本 1，当前停在触发节点。这是浏览器里的演示记录。",
         },
       ],
     };

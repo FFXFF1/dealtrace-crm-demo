@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  const STORAGE_KEY = 'dealtrace_crm_static_demo_v1';
+  const STORAGE_KEY = 'dealtrace-crm_demo_state_v1';
 
   const ICONS = {
     gauge: '<circle cx="12" cy="13" r="8"/><path d="M12 13l3.5-3.5M8.5 17h7"/>',
@@ -508,23 +508,15 @@
         if (!run || !run.proposal) return;
         const act = el.dataset.propAction;
         if (act === 'approve') {
-          run.proposalState = 'approved';
-          if (run.proposal.actionType === 'create_tasks_batch') {
-            run.proposal.tasksToAdd.forEach((t) => {
-              state.tasks.unshift({ id: 't-prop-' + Date.now(), ...t, status: 'pending' });
-            });
-          } else if (run.proposal.actionType === 'confirm_memory') {
-            const ct = state.contacts.find((c) => c.id === run.proposal.contactId);
-            const mem = ct?.memories.find((m) => m.id === run.proposal.memoryId);
-            if (mem) mem.status = 'confirmed';
-          }
+          if (run.proposalState !== 'pending') return;
+          window.approveDemoProposal(state, run);
           toast('已批准提案并写入演示 CRM');
         } else if (act === 'reject') {
           run.proposalState = 'rejected';
           toast('已拒绝该提案');
         } else if (act === 'undo') {
           run.proposalState = 'pending';
-          state.tasks = state.tasks.filter((t) => !String(t.id).startsWith('t-prop-'));
+          state.tasks = state.tasks.filter((t) => !t.id.startsWith(`t-prop-${run.id}-`));
           toast('已撤销变更');
         }
         saveState();

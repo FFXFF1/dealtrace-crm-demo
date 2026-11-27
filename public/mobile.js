@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  const STORAGE_KEY = 'dealtrace_crm_static_demo_v1';
+  const STORAGE_KEY = 'dealtrace-crm_demo_state_v1';
 
   const ICONS = {
     inbox: '<path d="M4 13V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7M4 13l3.5 5h9L20 13M4 13h4l2 2h4l2-2h4"/>',
@@ -733,13 +733,13 @@
     document.querySelectorAll('[data-m-prop]').forEach((el) => {
       el.onclick = () => {
         const [act, id] = el.dataset.mProp.split(':');
-        const r = state.workbenchRuns.find((x) => x.id === id);
-        if (r) {
-          r.proposalState = act === 'approve' ? 'approved' : 'rejected';
-          saveState();
-          render();
-          toast(act === 'approve' ? '已批准写入' : '已拒绝提案');
-        }
+        const run = state.workbenchRuns.find((item) => item.id === id);
+        if (!run || !run.proposal || run.proposalState !== 'pending') return;
+        if (act === 'approve') window.approveDemoProposal(state, run);
+        else run.proposalState = 'rejected';
+        saveState();
+        render();
+        toast(act === 'approve' ? '已批准写入' : '已拒绝提案');
       };
     });
 
