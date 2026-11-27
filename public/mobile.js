@@ -39,15 +39,7 @@
     return '¥' + (Number(cents || 0) / 100).toLocaleString('zh-CN');
   }
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    return window.createInitialDemoState();
-  }
-
-  let state = loadState();
+  let state = window.loadDemoState(STORAGE_KEY);
   let mobileView = 'list';
   let activeKanbanStage = 'new';
   let sheetType = null;

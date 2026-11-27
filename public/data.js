@@ -71,7 +71,7 @@ window.createInitialDemoState = function createInitialDemoState() {
       {
         id: 'c-1',
         name: '顾言川',
-        company: '砚舟智造（演示）',
+        company: '砚舟智造',
         email: 'gu.yanchuan@example.test',
         phone: '+1 202-555-0111',
         source: 'WhatsApp 售前咨询',
@@ -85,7 +85,7 @@ window.createInitialDemoState = function createInitialDemoState() {
       {
         id: 'c-2',
         name: '沈攸宁',
-        company: '星岬物流（演示）',
+        company: '星岬物流',
         email: 'shen.youning@example.test',
         phone: '+1 202-555-0112',
         source: '微信客服',
@@ -97,7 +97,7 @@ window.createInitialDemoState = function createInitialDemoState() {
       {
         id: 'c-3',
         name: '许知微',
-        company: '映栈咨询（演示）',
+        company: '映栈咨询',
         email: 'xu.zhiwei@example.test',
         phone: '+1 202-555-0113',
         source: '老客户转介绍',
@@ -110,7 +110,7 @@ window.createInitialDemoState = function createInitialDemoState() {
       {
         id: 'c-4',
         name: '陆承砚',
-        company: '青棱设备（演示）',
+        company: '青棱设备',
         email: 'lu.chengyan@example.test',
         phone: '+1 202-555-0114',
         source: '官网表单',
@@ -122,7 +122,7 @@ window.createInitialDemoState = function createInitialDemoState() {
       {
         id: 'c-5',
         name: '唐越宁',
-        company: '汀屿设计（演示）',
+        company: '汀屿设计',
         email: 'tang.yuening@example.test',
         phone: '+1 202-555-0115',
         source: '活动报名',
@@ -223,6 +223,24 @@ window.createInitialDemoState = function createInitialDemoState() {
       { id: 'rule-3', title: '业务口径以本体论语义层为准', body: '统计高价值停滞商机、转化率或回访优先级前，必须先调用 ontology_check_answerable 校验口径可回答性，禁止模型臆造 SQL。', source: 'DealTrace 演示规则 · 本体口径', status: 'active' },
     ],
   };
+};
+
+window.loadDemoState = function loadDemoState(storageKey) {
+  const initial = window.createInitialDemoState();
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return initial;
+    const state = JSON.parse(raw);
+    if (!Array.isArray(state?.contacts)) return initial;
+
+    for (const contact of state.contacts) {
+      const company = initial.contacts.find((seed) => seed.id === contact?.id)?.company;
+      if (company && contact.company === `${company}（演示）`) contact.company = company;
+    }
+    return state;
+  } catch {
+    return initial;
+  }
 };
 
 window.approveDemoProposal = function approveDemoProposal(state, run) {
