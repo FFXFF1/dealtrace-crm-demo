@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="DealTrace CRM 项目介绍：面向企服 SaaS 销售，用可信数据约束受控 Agent，并以评测回归保证分析与跟进质量。" />
+  <title>项目介绍 · DealTrace CRM</title>
+  <link rel="icon" type="image/svg+xml" href="brand.svg" />
+  <link rel="stylesheet" href="about.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="about.html">
+        <span class="brand-mark">
+          <svg width="16" height="16" viewBox="0 0 216 216"><path d="M52 154V60h40c27 0 45 19 45 46s-18 48-45 48H52Z" fill="none" stroke="#fff" stroke-width="13" stroke-linejoin="round"/><path d="M115 124h35l18-28" fill="none" stroke="#a5b4fc" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><circle cx="173" cy="88" r="10" fill="#f4a77d"/></svg>
+        </span>
+        DealTrace CRM
+      </a>
+      <div class="nav-actions">
+        <a class="btn primary" href="index.html#/app/inbox">进入演示</a>
+        <a class="btn" href="mobile.html#/app/inbox">手机端</a>
+        <button class="btn ghost" id="toggle-theme" type="button">切换主题</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">企服 SaaS · 大客户跟进</div>
+      <h1>可信数据、受控 Agent 与评测回归</h1>
+      <p class="lead">销售从会话和商机入手，核对客户试点范围、采购偏好和交付政策。Agent 读取获准使用的资料并给出带依据的跟进建议，对客动作交由负责人确认。</p>
+      <p class="note">本页介绍完整产品的设计要点。演示站按真实结构搭建，使用虚构数据，纯静态运行，不会调用真实模型，也不会对外发送消息。</p>
+    </section>
+
+    <section>
+      <h2>要解决什么问题</h2>
+      <p>销售跟进企业试点或席位扩容时，需要核对 WhatsApp 会话、CRM 商机记录，以及内部产品和报价政策。资料分散时容易漏掉客户偏好或引用旧政策。涉及价格承诺和对客沟通时，由负责人核对后确认。</p>
+      <p>系统的做法是：销售选定客户范围后，由 Agent 读取已经确认的记忆与产品依据，协作分析商机，并产出带来源、缺失材料和下一步建议的报告。负责人可以补充方向并接续任务；对客动作必须经过独立确认。执行轨迹和分层评测用来定位事实遗漏、协作冲突和输出失败，为后续修正资料、工具或流程提供依据。</p>
+    </section>
+
+    <section>
+      <h2>系统设计架构全景</h2>
+      <p>将业务交互、受控 Agent Harness、三源分离的可信数据面与评测回归明确划界：记忆与知识摘要仅作参考，数据库始终保持唯一事实真源，对客与高敏操作必须过提案人审。</p>
+      <div class="diagram-box" id="about-arch-svg"></div>
+    </section>
+
+    <section>
+      <h2>持久化 Run 与动作提案状态机</h2>
+      <p>模型单回合结束只是中间态。异步队列、租约校验、6 字段带快照可逆写、人审挂起续跑与写回不确定停机共同保证长任务可控收敛。</p>
+      <div class="diagram-box" id="about-fsm-svg"></div>
+    </section>
+
+    <section>
+      <h2>核心能力</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>MCP 工具治理与 Ontology</h3>
+          <p>商机、会话与知识工具复用领域 Handler，按可信租户、角色、范围及白名单授权。Ontology 使用版本化口径、许可查询模板和受限只读角色查库并返回查询依据。</p>
+        </article>
+        <article class="card">
+          <h3>客户长期记忆与可信召回</h3>
+          <p>PostgreSQL 保存已确认的客户偏好。查询时并行走本地 BM25 和 Mem0 语义召回，回读 SQL 核对归属、内容哈希及有效性，再保留锁定项并以 RRF 融合。Mem0 失败时降级本地。</p>
+        </article>
+        <article class="card">
+          <h3>企业知识与引用溯源</h3>
+          <p>本地 pgvector 与 WeKnora 企业 Wiki 按授权范围提供资料。发布原页、来源版本和哈希进入引用校验，复用前再次验证，已失效引用停止展示。</p>
+        </article>
+        <article class="card">
+          <h3>Pi Runtime 与持久编排</h3>
+          <p>Pi 运行多轮模型与工具，Harness 管理动作权限和结构化交付。PostgreSQL 队列与 Worker 承担租约校验和恢复，Run 行锁为运行事件分配序号，支持流式回放。</p>
+        </article>
+        <article class="card">
+          <h3>多 Agent 与证据冲突治理</h3>
+          <p>Supervisor 汇总多个只读 Specialist 的观察，按字段值与来源版本比对。发现相关证据不一致时暂停对应写入，并记录待人工确认或重读的差异。</p>
+        </article>
+        <article class="card">
+          <h3>Langfuse 与分层评测</h3>
+          <p>Trace 经白名单脱敏后通过 Outbox 异步投递。确定性规则核对事实、权限和引用，语义 Judge 检查任务贴合度与可执行性。固定回归样本覆盖已确认的失败模式。</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>人机协同与安全边界</h2>
+      <ul class="list">
+        <li>
+          <strong>对客动作先提案、后确认</strong>
+          <span>推进商机阶段和对客户发送消息等动作，由 Agent 生成提案，在工作台交给有权限的负责人确认。</span>
+        </li>
+        <li>
+          <strong>白名单写入与一键撤销</strong>
+          <span>Agent 仅可自动修改 6 个低敏感辅助字段，写入前保存快照。人工撤销时会比对是否已被销售改过，避免覆盖最新的人工修改。</span>
+        </li>
+        <li>
+          <strong>策略版本与紧急熔断</strong>
+          <span>主管调整跟进策略时会生成新版本，并终止旧草稿的继续执行。必要时可按全租户或单个客户立即阻断尚未发出的对客动作。</span>
+        </li>
+        <li>
+          <strong>审批防重与并发保护</strong>
+          <span>批准、拒绝和暂停在重试时复用同一请求键，避免网络抖动导致重复执行；长耗时写入还会校验队列租约，拦截超时旧进程的迟到写回。</span>
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>界面与工程</h2>
+      <ul class="list">
+        <li>
+          <strong>流式执行时间线</strong>
+          <span>工作台按事件序号展示任务进度、工具调用和回执。页面刷新、断网重连或任务结束后再打开，都能回读已持久化的事件。</span>
+        </li>
+        <li>
+          <strong>移动端与多端一致</strong>
+          <span>界面会适配软键盘和横幅高度，并处理中文输入法组合态，减少误触。商机看板用版本校验防止多端同时改写时的脏更新。</span>
+        </li>
+        <li>
+          <strong>统一领域服务与异步执行</strong>
+          <span>产品界面与 Agent 运行时共享同一套领域能力，数据层按组织做行级隔离。长任务先落库再入队，由独立 Worker 执行，避免页面超时悬挂。</span>
+        </li>
+      </ul>
+    </section>
+
+    <div class="cta">
+      <h2>打开演示</h2>
+      <p>演示覆盖会话收件箱、Agent 工作台、客户记忆和销售漏斗。你可以从桌面或手机进入，数据互相同步在本机浏览器中。</p>
+      <div class="cta-actions">
+        <a class="btn" href="index.html#/app/inbox">进入桌面演示</a>
+        <a class="btn ghost" href="mobile.html#/app/inbox">打开手机端</a>
+      </div>
+    </div>
+
+    <footer>DealTrace CRM · 演示整理 fyx · <a href="LICENSE.txt">项目许可</a></footer>
+  </main>
+
+  <script src="welcome.js"></script>
+  <script>
+    (function () {
+      var KEY = "dealtrace_crm_intro_seen_v1";
+      var KEY2 = "dealtrace_crm_arch_intro_v2";
+      var STATE = "dealtrace_crm_static_demo_v1";
+      try { localStorage.setItem(KEY, "1"); localStorage.setItem(KEY2, "1"); } catch (e) {}
+
+      if (window.CrmArchDiagrams) {
+        var archBox = document.getElementById("about-arch-svg");
+        var fsmBox = document.getElementById("about-fsm-svg");
+        if (archBox) archBox.innerHTML = window.CrmArchDiagrams.renderArchSvg();
+        if (fsmBox) fsmBox.innerHTML = window.CrmArchDiagrams.renderFsmSvg();
+      }
+
+      function currentTheme() {
+        try {
+          var raw = localStorage.getItem(STATE);
+          if (raw) {
+            var theme = JSON.parse(raw).theme;
+            if (theme === "dark" || theme === "light") return theme;
+          }
+        } catch (e) {}
+        return "light";
+      }
+
+      function apply(theme) {
+        document.documentElement.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
+      }
+
+      function persist(theme) {
+        try {
+          var raw = localStorage.getItem(STATE);
+          if (!raw) return;
+          var state = JSON.parse(raw);
+          if (!state || typeof state !== "object") return;
+          state.theme = theme;
+          localStorage.setItem(STATE, JSON.stringify(state));
+        } catch (e) {}
+      }
+
+      apply(currentTheme());
+      document.getElementById("toggle-theme").addEventListener("click", function () {
+        var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        apply(next);
+        persist(next);
+      });
+    })();
+  </script>
+</body>
+</html>

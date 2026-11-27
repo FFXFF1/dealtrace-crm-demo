@@ -1,0 +1,9 @@
+{
+  "name": "dealtrace-crm-demo",
+  "compatibility_date": "2026-11-19",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash"
+  }
+}
